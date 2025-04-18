@@ -1,0 +1,303 @@
+<!-- chat.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Campus Compass - Chat</title>
+  <style>
+    body { margin: 0; font-family: Arial; }
+    .sidebar {
+      background: #f0f0f0;
+      width: 250px;
+      height: 100vh;
+      float: left;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .main {
+      margin-left: 250px;
+      padding: 20px;
+    }
+    .chat-bubble {
+      background: #f1f1f1;
+      padding: 10px 15px;
+      border-radius: 12px;
+      margin: 10px 0;
+      max-width: 60%;
+    }
+    .user {
+      background: #2a5ee4;
+      color: white;
+      margin-left: auto;
+      text-align: right;
+    }
+    .chat-container {
+      height: 70vh;
+      overflow-y: auto;
+    }
+    .quick-actions {
+      margin: 15px 0;
+    }
+    .quick-actions button {
+      background: #eee;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      margin-right: 8px;
+      cursor: pointer;
+    }
+    input[type="text"] {
+      width: 90%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h3>UniBot</h3>
+  <button onclick="startNewChat()" style="background:#2a5ee4; color:white; border:none; padding:10px; border-radius:6px;">+ New Chat</button>
+  <div id="chatList" style="margin-top: 20px;"></div>
+  <br><br>
+  <div>Course Registration Help</div>
+  <div>Library Hours</div>
+  <div>Exam Schedule</div>
+  <br><br>
+  <div style="position: absolute; bottom: 20px; left: 20px;">
+    <hr>
+    <div style="font-size: 14px;">
+      {{ session['name'] }}<br>
+      {{ session['email'] }}
+    </div>
+  </div>  
+</div>
+
+<div class="main">
+  <h3>Chat with UniBot</h3>
+  <div class="chat-container"></div>
+  <div class="quick-actions">
+    <button>📋 Show Mess Menu</button>
+    <button>👨‍🏫 Find Professor</button>
+    <button>📚 Library Hours</button>
+    <button>🗓️ Class Schedule</button>
+  </div>
+  <input type="text" placeholder="Type your message here..." />
+</div>
+
+<script>
+  
+    function loadChat(chatId) {
+        const chatData = JSON.parse(localStorage.getItem(chatId));
+        if (!chatData || !chatData.messages) return;
+
+        const container = document.querySelector(".chat-container");
+        if (container) container.innerHTML = ""; // 🧼 Clear old messages
+
+        chatData.messages.forEach(msg => displayMessage(msg.text, msg.sender)); // 👈 we'll avoid saving again
+    }
+
+    function displayMessage(text, sender) {
+        const bubble = document.createElement('div');
+        bubble.className = 'chat-bubble';
+        if (sender === 'user') bubble.classList.add('user');
+        bubble.innerText = text;
+        document.querySelector('.chat-container').appendChild(bubble);
+        document.querySelector('.chat-container').scrollTop = 9999;
+    }
+
+</script>
+
+<script>
+    let chatId = localStorage.getItem("activeChatId") || createNewChatId();
+  
+    function createNewChatId() {
+        const id = `chat-${Date.now()}`;
+        const chatObject = {
+            title: "Untitled Chat",
+            messages: [],
+            archived: false
+        };
+        localStorage.setItem("activeChatId", id);
+        localStorage.setItem(id, JSON.stringify(chatObject));  // ✅ GOOD
+        return id;
+    }
+
+  
+    function saveMessage(text, sender) {
+        const key = localStorage.getItem("activeChatId");
+        let chat = JSON.parse(localStorage.getItem(key));
+
+        // ✅ Ensure chat object has messages array
+        if (!chat || !Array.isArray(chat.messages)) {
+            chat = { messages: [], archived: false, title: "Untitled Chat" };
+        }
+
+        chat.messages.push({ text, sender });
+        localStorage.setItem(key, JSON.stringify(chat));
+    }
+  
+    function sendMessage() {
+      console.log("sendMessage triggered");
+      const inputField = document.querySelector('input[type="text"]');
+      const userMessage = inputField.value.trim();
+      if (!userMessage) return;
+  
+      displayMessage(userMessage, 'user');
+      saveMessage(userMessage, 'user');
+      inputField.value = "";
+  
+      fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: userMessage })
+      })
+      .then(res => res.json())
+      .then(data => {
+        displayMessage(data.response, 'bot');
+        saveMessage(data.response, 'bot');
+      })
+      .catch(err => {
+        displayMessage("Sorry, something went wrong.", 'bot');
+        console.error("Error:", err);
+      });
+    }
+  
+    function loadChatTitles() {
+        const chatList = document.getElementById("chatList");
+        if (!chatList) return;
+        chatList.innerHTML = "";
+
+        for (let key in localStorage) {
+            if (!key.startsWith("chat-")) continue;
+
+            let chatMeta;
+            try {
+            chatMeta = JSON.parse(localStorage.getItem(key));
+            } catch {
+            continue;
+            }
+
+            if (!chatMeta || typeof chatMeta !== "object" || !Array.isArray(chatMeta.messages)) {
+            // Fix legacy or corrupted entries
+            chatMeta = {
+                title: "Untitled Chat",
+                messages: Array.isArray(chatMeta) ? chatMeta : [],
+                archived: false
+            };
+            localStorage.setItem(key, JSON.stringify(chatMeta));
+            }
+
+            if (chatMeta.archived) continue;
+
+            const title = chatMeta.title || (chatMeta.messages[0]?.text?.slice(0, 20) + "...") || "Untitled Chat";
+
+            const container = document.createElement("div");
+            container.style = "display:flex; align-items:center; justify-content:space-between; background:#e0e0e0; padding:8px; border-radius:6px; margin-bottom:6px;";
+
+            const btn = document.createElement("button");
+            btn.textContent = title;
+            btn.style = "flex:1; border:none; background:transparent; text-align:left;";
+            btn.onclick = function () {
+                const current = localStorage.getItem("activeChatId");
+                if (current === key) return; // 🛑 Prevent reloading the same chat
+
+                localStorage.setItem("activeChatId", key);
+                loadChat(key); // 🔁 same single loader
+            };
+
+            const rename = document.createElement("span");
+            rename.textContent = "✏️";
+            rename.title = "Rename";
+            rename.style = "cursor:pointer; margin: 0 6px;";
+            rename.onclick = function (e) {
+                e.stopPropagation();
+                const newTitle = prompt("Enter new chat title:");
+                if (newTitle) {
+                    const chatMeta = JSON.parse(localStorage.getItem(key)) || { messages: [], archived: false };
+                    chatMeta.title = newTitle;
+                    localStorage.setItem(key, JSON.stringify(chatMeta));
+                    localStorage.setItem("activeChatId", key);
+                    location.reload();
+                }
+            };
+
+            const del = document.createElement("span");
+            del.textContent = "🗑️";
+            del.title = "Delete";
+            del.style = "cursor:pointer; margin: 0 6px;";
+            del.onclick = function (e) {
+                e.stopPropagation();
+
+                if (confirm("Delete this chat permanently?")) {
+                    //const key = localStorage.getItem("activeChatId");
+
+                    // First remove the chat
+                    localStorage.removeItem(key);
+
+                    // Then unset activeChatId if it's the same
+                    if (localStorage.getItem("activeChatId") === key) {
+                    localStorage.removeItem("activeChatId");
+                    }
+
+                    // Then reload sidebar and clear chat
+                    document.querySelector(".chat-container").innerHTML = "";
+                    loadChatTitles();
+                    location.reload();
+                }
+            };
+
+            const archive = document.createElement("span");
+            archive.textContent = "📦";
+            archive.title = "Archive";
+            archive.style = "cursor:pointer;";
+            archive.onclick = function (e) {
+            e.stopPropagation();
+            chatMeta.archived = true;
+            localStorage.setItem(key, JSON.stringify(chatMeta));
+            window.location.reload();
+            };
+
+            container.appendChild(btn);
+            container.appendChild(rename);
+            container.appendChild(del);
+            container.appendChild(archive);
+
+            chatList.appendChild(container);
+        }
+    }
+
+    function startNewChat() {
+        const id = `chat-${Date.now()}`;
+        const chatObj = {
+            title: "Untitled Chat",
+            messages: [],
+            archived: false
+        };
+        localStorage.setItem(id, JSON.stringify(chatObj));
+        localStorage.setItem("activeChatId", id);
+        location.reload(); // 🔁 Refresh to load the new blank chat
+    }
+
+    window.onload = function () {
+        loadChatTitles();
+
+        const chatId = localStorage.getItem("activeChatId");
+        if (chatId) {
+            loadChat(chatId); // 👈 one true place to load
+        }
+
+        const input = document.querySelector('input[type="text"]');
+        input.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    };
+
+  </script>
+</body>
+</html>

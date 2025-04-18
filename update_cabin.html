@@ -1,0 +1,96 @@
+<!-- update_cabin.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Update Cabin Info</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: #f5f5f5;
+    }
+    .sidebar {
+      width: 250px;
+      height: 100vh;
+      background: #2c3e50;
+      color: white;
+      padding: 20px;
+      float: left;
+    }
+    .sidebar h3 { margin-top: 0; }
+    .sidebar a {
+      display: block;
+      color: white;
+      padding: 10px 0;
+      text-decoration: none;
+    }
+    .sidebar a.active {
+      background: #1a3c82;
+      padding-left: 10px;
+      border-radius: 4px;
+    }
+    .main {
+      margin-left: 250px;
+      padding: 30px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .row {
+      display: flex;
+      gap: 20px;
+    }
+    .row input {
+      flex: 1;
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .btn-save { background: #2a5ee4; color: white; }
+    .btn-cancel { background: #ccc; }
+    .header {
+      float: right;
+      margin-top: 10px;
+      margin-right: 30px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h3>Professor Portal</h3>
+  <a href="#" class="active">Update Cabin Info</a>
+  <a href="#">Edit Timetable</a>
+</div>
+
+<div class="main">
+  <div class="header">Welcome, Professor | <a href="#">Logout</a></div>
+  <h2>Update Cabin Information</h2>
+  <p>Manage your cabin details and contact information</p>
+
+  <input type="text" placeholder="Enter cabin number" />
+  <div class="row">
+    <input type="text" placeholder="Building" />
+    <input type="text" placeholder="Floor" />
+  </div>
+  <input type="text" placeholder="e.g., Mon-Fri 10:00 AM - 4:00 PM" />
+  <input type="text" placeholder="Contact extension number" />
+  <textarea placeholder="Additional notes"></textarea>
+
+  <button class="btn-cancel">Cancel</button>
+  <button class="btn-save">Save Changes</button>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Verify OTP</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="login-wrapper">
+    <form class="login-box" method="POST" action="/verify">
+      <h2>Enter OTP sent to your email</h2>
+      <input type="hidden" name="email" value="{{ email }}">
+      <input type="text" name="otp" placeholder="6-digit OTP" required />
+      <button type="submit">Verify</button>
+    </form>
+  </div>
+</body>
+</html>
