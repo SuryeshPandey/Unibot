@@ -1,7 +1,6 @@
 Flask==2.2.5
 nltk==3.8.1
 spacy==3.7.2
-neuralcoref @ git+https://github.com/huggingface/neuralcoref.git
 openai==1.14.2
 requests==2.31.0
 beautifulsoup4==4.12.3
