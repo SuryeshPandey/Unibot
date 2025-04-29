@@ -12,7 +12,7 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
-import neuralcoref
+#import neuralcoref
 from openai import OpenAI
 import json
 from tensorflow.keras.models import load_model
@@ -35,7 +35,7 @@ client = OpenAI(api_key="fill yours")
 nltk.download("punkt")
 nltk.download("stopwords")
 nlp = spacy.load("en_core_web_sm")
-neuralcoref.add_to_pipe(nlp)
+#neuralcoref.add_to_pipe(nlp)
 print("✅ NeuralCoref successfully added to SpaCy pipeline")
 stop_words = set(stopwords.words("english"))
 
