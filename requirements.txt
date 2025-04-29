@@ -7,4 +7,4 @@ beautifulsoup4==4.12.3
 scikit-learn==1.4.2
 tensorflow==2.13.0
 numpy==1.24.3
-pickle5==0.0.12
+
