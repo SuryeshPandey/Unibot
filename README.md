@@ -1,11 +1,11 @@
 # Unibot - AI-Powered Campus Chatbot for Bennett University
 
-Developed a full-stack intelligent chatbot using Flask, SQLite, and a locally hosted Mistral 7B Instruct model, tailored to answer campus-specific queries. The chatbot handles tasks like retrieving professors’ cabin numbers, mess menu, timetable-based availability, and campus navigation. Integrated LinkedIn and university website scraping to suggest professors based on their specialization and display their credentials. Enabled role-based login (student/professor) with OTP verification, allowing professors to update their timetables and cabin info. Used NLP ( Natural Language Processing ) techniques to parse Excel-based schedules, and designed an interactive chat UI using HTML, CSS, and JavaScript with local Storage-based chat history.
+Developed a full-stack intelligent chatbot using Flask, SQLite, and a locally hosted Mistral 7B Instruct model, tailored to answer campus-specific queries. The chatbot handles tasks like retrieving professors’ cabin numbers, timetable-based availability. Integrated LinkedIn and university website scraping to suggest professors based on their specialization and display their credentials. Enabled role-based login (student/professor) with OTP verification, allowing professors to update their timetables and cabin info. Used NLP ( Natural Language Processing ) techniques to parse Excel-based schedules, and designed an interactive chat UI using HTML, CSS, and JavaScript with local Storage-based chat history.
 
 
 ## Key Features
 
-- **Campus-Specific Knowledge**: Answers queries about professors' cabin locations, mess menus, timetables, and more
+- **Campus-Specific Knowledge**: Answers queries about professors' cabin locations, timetables, and more
 - **Local AI Processing**: Uses Mistral 7B Instruct model running locally for privacy and reliability
 - **Role-Based Access**: Separate interfaces for students and professors with appropriate permissions
 - **Secure Authentication**: OTP verification for user registration
