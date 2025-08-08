@@ -1,0 +1,111 @@
+{
+  "intents": [
+      {
+          "tag": "greeting",
+          "patterns": [
+              "hello", "hi", "hey", "good morning", "good evening",
+              "yo", "hey there", "greetings", "hello there", "what's up"
+          ]
+      },
+      {
+          "tag": "goodbye",
+          "patterns": [
+              "bye", "goodbye", "see you", "talk to you later", "exit",
+              "catch you later", "peace out", "see ya", "quit", "close chat"
+          ]
+      },
+      {
+          "tag": "get_cabin",
+          "patterns": [
+              "where is professor mittal's office?",
+              "cabin of dr. abc",
+              "what room does ms. xyz sit in?",
+              "where is dr. alok mishra's cabin?",
+              "what is the location of professor xyz?",
+              "room number for ms. abc",
+              "dr. abc office?",
+              "where is dr. xyz sitting?",
+              "cabin number for professor mittal",
+              "find alok mishra's office",
+              "where can I meet dr. xyz?",
+              "professor cabin location",
+              "cabin number of dr xyz",
+              "professor xyz's room",
+              "location of mr. abc",
+              "where does professor abc sit",
+              "where is the office of dr. xyz",
+              "room where dr. abc is sitting",
+              "what is dr. xyz's office location",
+              "I want to know where dr. xyz is sitting"
+          ]
+      },
+      {
+          "tag": "get_specialization",
+          "patterns": [
+              "what does dr. mittal specialize in?",
+              "who is professor abc?",
+              "tell me about mr. xyz",
+              "specialization of ms. abc",
+              "what field does dr. xyz work in?",
+              "area of expertise for professor abc",
+              "research domain of dr. xyz",
+              "background of mr. abc",
+              "can you tell me what dr. xyz does?",
+              "give me info about ms. abc",
+              "field of work for professor abc",
+              "who is dr. xyz?",
+              "what is dr. abc known for?",
+              "explain professor xyz's work",
+              "tell me the research area of dr. xyz",
+              "what department is professor abc in?",
+              "what subject does dr. abc teach?",
+              "what is mr. xyz's specialization?",
+              "professor abc background",
+              "research interest of dr. abc"
+          ]
+      },
+      {
+          "tag": "ask_timetable",
+          "patterns": [
+              "show my timetable",
+              "what class do I have next?",
+              "professor timetable",
+              "my schedule",
+              "class schedule for today",
+              "which class do I have now?",
+              "view timetable",
+              "list of classes today",
+              "what time is my next class?",
+              "check timetable",
+              "show today’s classes",
+              "display full timetable",
+              "today’s lecture schedule",
+              "tell me my timetable",
+              "student timetable",
+              "prof timetable",
+              "next class timing",
+              "I want to see my timetable",
+              "get my class schedule",
+              "class timings"
+          ]
+      },
+      {
+        "tag": "get_professor_free_time",
+        "patterns": [
+          "When is Mandeep Mittal free?",
+          "Is he free right now?",
+          "What time can I meet him?",
+          "When will he be free?"
+        ]
+      },
+      {
+        "tag": "get_next_class",
+        "patterns": [
+          "When is my next class?",
+          "What is my next lecture?",
+          "Do I have class now?",
+          "What time is my next session?"
+        ]
+      }   
+  ]
+}

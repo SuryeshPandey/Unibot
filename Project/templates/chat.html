@@ -1,0 +1,246 @@
+<!-- chat.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Campus Compass - Chat</title>
+  <style>
+    body { margin: 0; font-family: Arial; }
+    .sidebar {
+      background: #f0f0f0;
+      width: 250px;
+      height: 100vh;
+      float: left;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .main {
+      margin-left: 250px;
+      padding: 20px;
+    }
+    .chat-bubble {
+      display: block;
+      width: fit-content;
+      max-width: 60%;
+      padding: 10px 15px;
+      margin: 10px 0;
+      border-radius: 12px;
+      word-wrap: break-word;
+      background: #f1f1f1;
+    }
+    .chat-bubble.user {
+      background: #2a5ee4;
+      color: white;
+      margin-left: auto;
+      text-align: right;
+    }
+    .chat-container {
+      height: 70vh;
+      overflow-y: auto;
+    }
+    .quick-actions {
+      margin: 15px 0;
+    }
+    .quick-actions button {
+      background: #eee;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      margin-right: 8px;
+      cursor: pointer;
+    }
+    input[type="text"] {
+      width: 90%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h3>UniBot</h3>
+  <button onclick="startNewChat()" style="background:#2a5ee4; color:white; border:none; padding:10px; border-radius:6px;">+ New Chat</button>
+  <div id="chatList" style="margin-top: 20px;"></div>
+  <br><br>
+  {% if session['user_type'] == 'professor' %}
+  <hr>
+  <div>
+    <a href="/timetable" class="view-timetable"  style="display:inline-block;background:#2a5ee4;color:white;padding:10px 16px;border-radius:8px;text-decoration:none;font-weight:500;margin-top:20px;">📅 View Timetable</a>
+  </div>
+  {% endif %}
+  <br><br>
+  <div style="position: absolute; bottom: 20px; left: 20px;">
+    <hr style="margin-bottom: 8px;">
+    <div style="font-size: 14px; margin-bottom: 10px;">
+      {{ session['name'] }}<br>
+      {{ session['email'] }}
+    </div>
+    <a href="/logout" style="display:inline-flex;align-items:center;justify-content:center;background-color:#000;color:#fff;padding:10px 20px;border-radius:999px;font-weight:600;font-size:14px;text-decoration:none;gap:10px;box-shadow:0 2px 5px rgba(0,0,0,0.2);transition:background 0.3s ease;">
+      <span style="font-size: 16px;">👤➡️</span> LOG OUT
+    </a>  
+  </div>    
+</div>
+
+<div class="main">
+  <h3>Chat with UniBot</h3>
+  <div class="chat-container" id="chat-messages" style="margin-top: 80px;"></div>
+  <input type="text" id="chat-input" placeholder="Type your message here..." />
+</div>
+
+<script>
+let currentSessionId = null;
+
+function startNewChat() {
+  currentSessionId = null;
+  document.getElementById("chat-messages").innerHTML = "";
+  document.getElementById("chat-input").value = "";
+
+  fetch("/create-session", {
+    method: "POST"
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.session_id) {
+      currentSessionId = data.session_id;
+      loadSessions();
+      document.getElementById("chat-messages").innerHTML = "";
+      document.getElementById("chat-input").value = "";
+    }
+  });
+}
+
+function loadSessions() {
+  fetch("/sidebar-sessions")
+    .then(res => res.json())
+    .then(data => {
+      const chatList = document.getElementById("chatList");
+      chatList.innerHTML = "";
+      data.forEach(session => {
+        const container = document.createElement("div");
+        container.style = "display:flex; align-items:center; justify-content:space-between; background:#e0e0e0; padding:8px; border-radius:6px; margin-bottom:6px;";
+
+        const btn = document.createElement("button");
+        btn.textContent = session.title;
+        btn.style = "flex:1; border:none; background:transparent; text-align:left;";
+        btn.onclick = () => {
+          currentSessionId = session.id;
+          loadMessages(session.id);
+        };
+
+        const rename = document.createElement("span");
+        rename.textContent = "✏️";
+        rename.title = "Rename";
+        rename.style = "cursor:pointer; margin: 0 6px;";
+        rename.onclick = function (e) {
+          e.stopPropagation();
+          const newTitle = prompt("Enter new chat title:");
+          if (newTitle) {
+            fetch("/rename-session", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ session_id: session.id, new_title: newTitle })
+            }).then(() => loadSessions());
+          }
+        };
+
+        const del = document.createElement("span");
+        del.textContent = "🗑️";
+        del.title = "Delete";
+        del.style = "cursor:pointer; margin: 0 6px;";
+        del.onclick = function (e) {
+          e.stopPropagation();
+          if (confirm("Delete this chat permanently?")) {
+            fetch("/delete-session", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ session_id: session.id })
+            }).then(() => {
+              loadSessions();
+              document.getElementById("chat-messages").innerHTML = "";
+            });
+          }
+        };
+
+        container.appendChild(btn);
+        container.appendChild(rename);
+        container.appendChild(del);
+        chatList.appendChild(container);
+      });
+    });
+}
+
+
+function loadMessages(sessionId) {
+  currentSessionId = sessionId;
+  fetch(`/session/${sessionId}/messages`)
+    .then(res => res.json())
+    .then(data => {
+      const chatBox = document.getElementById("chat-messages");
+      chatBox.innerHTML = "";
+      data.forEach(msg => {
+        const div = document.createElement("div");
+        div.className = "chat-bubble";
+        if (msg.is_user) div.classList.add("user");
+        div.textContent = msg.text;
+        chatBox.appendChild(div);
+      });
+      chatBox.scrollTop = chatBox.scrollHeight;
+    });
+}
+
+function sendMessage() {
+  const input = document.getElementById("chat-input");
+  const text = input.value.trim();
+  if (!text) return;
+
+  // 👤 Show user's message immediately
+  const userDiv = document.createElement("div");
+  userDiv.className = "chat-bubble user";
+  userDiv.textContent = text;
+  document.getElementById("chat-messages").appendChild(userDiv);
+  document.getElementById("chat-messages").scrollTop = 9999;
+
+  input.value = "";
+
+  fetch("/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query: text })
+  })
+  .then(res => res.json())
+  .then(data => {
+    // ✅ Always update the current session ID
+    if (data.session_id) {
+      currentSessionId = data.session_id;
+    }
+
+    // 🤖 Show bot response
+    const botDiv = document.createElement("div");
+    botDiv.className = "chat-bubble";
+    botDiv.textContent = data.response;
+    document.getElementById("chat-messages").appendChild(botDiv);
+    document.getElementById("chat-messages").scrollTop = 9999;
+
+    // ✅ Now reload sidebar to show new session
+    setTimeout(() => loadSessions(), 250);
+  });
+}
+
+
+
+window.onload = function () {
+  loadSessions();
+  const input = document.getElementById("chat-input");
+  input.addEventListener("keypress", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+};
+</script>
+</body>
+</html>

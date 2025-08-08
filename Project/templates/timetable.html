@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Your Timetable</title>
+
+  <div style="margin-bottom: 15px;">
+    <a href="/chat" style="text-decoration: none;">
+      <button style="background:#2a5ee4; color:white; border:none; padding:10px 16px; border-radius:6px; cursor:pointer;">
+        ⬅ Back to Chat
+      </button>
+    </a>
+  </div>
+  
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; vertical-align: top; }
+    .edit-btn { background: #2a5ee4; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; float: right; }
+    .save-btn { background: green; color: white; padding: 8px 16px; border: none; border-radius: 6px; margin-top: 20px; cursor: pointer; }
+    .cancel-btn { background: gray; color: white; padding: 8px 16px; border: none; border-radius: 6px; margin-left: 10px; }
+    input[type="text"] { width: 90%; padding: 4px; }
+  </style>
+</head>
+<body>
+
+<h2>Your Timetable <button class="edit-btn" onclick="toggleEdit()">✏️ Edit</button></h2>
+
+<form method="POST" id="timetableForm" style="display:none;">
+  <table>
+    <tr>
+      <th>Slot / Day</th>
+      {% for day in days %}
+        <th>{{ day }}</th>
+      {% endfor %}
+    </tr>
+    {% for slot in slots %}
+    <tr>
+      <td>{{ slot }}</td>
+      {% for day in days %}
+        {% set value = timetable.get((day, slot), {}) %}
+        <td>
+          <input type="text" name="{{ day }}_{{ slot.replace('–', '-') }}_course" value="{{ value.course or '' }}" placeholder="Course">
+          <input type="text" name="{{ day }}_{{ slot.replace('–', '-') }}_room" value="{{ value.room or '' }}" placeholder="Room">
+        </td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+  <button type="submit" class="save-btn">💾 Save</button>
+  <button type="button" class="cancel-btn" onclick="window.location.reload()">Cancel</button>
+</form>
+
+<!-- Read-Only Table -->
+<div id="readOnlyView">
+  <table>
+    <tr>
+      <th>Slot / Day</th>
+      {% for day in days %}
+        <th>{{ day }}</th>
+      {% endfor %}
+    </tr>
+    {% for slot in slots %}
+    <tr>
+      <td>{{ slot }}</td>
+      {% for day in days %}
+        {% set value = timetable.get((day, slot), {}) %}
+        <td>
+          {{ value.course or "" }}<br>
+          <small>{{ value.room or "" }}</small>
+        </td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+<script>
+  function toggleEdit() {
+    document.getElementById("timetableForm").style.display = "block";
+    document.getElementById("readOnlyView").style.display = "none";
+  }
+</script>
+
+</body>
+</html>

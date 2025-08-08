@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.dylib
+chatbot_env/
+*.DS_Store
+*.log
+.env
