@@ -1,111 +1,123 @@
-# UniBot – AI-Powered Academic Chatbot for Bennett University
+# 🤖 UniBot — AI-Powered Academic Chatbot for Bennett University
 
-UniBot is an intelligent, NLP-powered chatbot designed to help students and faculty access academic information like professor cabin locations, specializations, and real-time class schedules using natural, conversational language. Built with Python and Flask, UniBot integrates multiple machine learning and web scraping techniques to provide contextual, real-time responses - all while being fully containerized for scalable deployment.
+UniBot is an intelligent, NLP-powered chatbot that helps students and faculty access academic information — professor cabin locations, specializations, and real-time class schedules — using natural, conversational language. Built with Python and Flask, it combines custom machine learning with live web scraping to deliver contextual, real-time responses, all fully containerized for consistent deployment.
 
----
-
-## Features
-
-- **Locate Professor Cabins** via simple chat queries  
-- **Intent Classification** using a custom-trained ANN model  
-- **Fetch Professor Specializations** via Proxycurl and SerpAPI  
-- **Timetable Queries** including next class, free time, etc.  
-- **Follow-Up Questions** with session-based memory  
-- **Secure Authentication** for login and role-based access  
-- **Professor-only Interfaces** to update cabins and timetables  
-- **Dockerized Deployment** for environment consistency  
-- **Real-time scraping**, NLP, TF-IDF, Regex, and Coreference resolution
+> Just ask it where your professor's cabin is — like texting a friend.
 
 ---
 
-## Tech Stack
+## ✨ Features
 
-### Backend:
-- Python 3.7
-- Flask Microframework
-- SQLite (File-based database)
-
-### Machine Learning & NLP:
-- Keras (Sequential ANN for intent classification)
-- TF-IDF for specialization queries
-- SpaCy, NLTK for text preprocessing
-- AllenNLP (coref-spanBERT-large for coreference resolution)
-- Regex + GPT (fallback logic for name/entity extraction)
-- Mistral/OpenAI (for final response polishing)
-
-### APIs:
-- Proxycurl API (LinkedIn scraping for professor background)
-- SerpAPI (Google search for LinkedIn URL fallback)
-- PhantomBuster (for deeper profile data)
-
-### Deployment:
-- Docker (complete containerization)
-- Render (public deployment platform)
-- GitHub (source code hosting)
+- **Locate Professor Cabins** via simple chat queries
+- **Professor Specializations** fetched in real time from the web
+- **Timetable Queries** — next class, free slots, schedules, and more
+- **Multi-Turn Context** — understands follow-ups like *"What about him?"* or *"Where is she?"*
+- **Intent Classification** using a custom-trained feedforward neural network (Keras)
+- **Secure Authentication** with role-based access
+- **Professor-Only Interfaces** to view and update cabin details and timetables
+- **Dockerized Deployment** for environment consistency
 
 ---
 
-## Project Structure
+## 🧠 How It Works
 
-```bash
-chatbot_project/
-│
-├── chatbot.py              # Main Flask app
-├── intent_model.h5         # Trained intent classification model
-├── intent_dataset.json     # Custom dataset for training
-├── tokenizer.pkl           # Tokenizer for input preprocessing
-├── label_encoder.pkl       # Label encoder for intents
-├── coref_resolver.py       # Coreference resolution logic
-├── extract_professor.py    # TF-IDF, Regex, NER, and GPT fallback logic
-├── templates/              # HTML templates (login, chat, update cabin/timetable)
-├── static/                 # CSS, JS, and assets
-├── Dockerfile              # Docker container setup
-├── requirements.txt        # Python dependencies
-└── README.md               # Project documentation
+Rather than relying on pre-trained platforms like Dialogflow or Rasa, UniBot runs a **custom intent-classification model trained from scratch in Keras**. The model is a feedforward neural network that predicts user intent from a handcrafted dataset (`intent_dataset.json`), giving full control and transparency over its behavior.
 
-```
+For understanding conversational context, UniBot uses a modern coreference-resolution model (`coref-spanbert-large`) alongside **SpaCy** and **NLTK**, enabling it to track references across a multi-turn conversation.
 
-## Setup Instructions
+Real-world professor data (such as specializations) is pulled live through external APIs including **Proxycurl**, **SerpAPI**, and **PhantomBuster**, keeping responses dynamic and connected to real sources.
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technologies |
+|---|---|
+| **Backend** | Python, Flask |
+| **Database** | SQLite |
+| **ML / NLP** | Keras (custom intent model), SpaCy, NLTK, coref-spanbert-large |
+| **Data Sources** | Proxycurl, SerpAPI, PhantomBuster |
+| **Frontend** | HTML5, CSS3 |
+| **Deployment** | Docker, Render |
+
+---
+
+## 👥 Two Users, One Experience
+
+| Capability | Students | Professors |
+|---|:---:|:---:|
+| Query timetables & cabins | ✅ | ✅ |
+| Ask about specializations | ✅ | ✅ |
+| Update personal timetable & cabin | ❌ | ✅ |
+
+Role-based access keeps schedule updates authentic and private without complicating the experience. Professors edit their timetable through a clean, spreadsheet-style grid; students simply type their questions.
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
+- Python 3.9+
+- Docker (optional, for containerized runs)
+- API keys for Proxycurl, SerpAPI, and/or PhantomBuster
 
-- Python 3.7  
-- Git  
-- LLM Model: [Mistral-7B-Instruct-v0.3-Q4](https://huggingface.co/jfer1015/Mistral-7B-Instruct-v0.3-Q4_K_M-GGUF). After downloading the model, please save it in a new folder called 'models'.
-- Docker (optional for deployment)  
-- API Keys for:
-  - [Proxycurl](https://proxycurl.com)
-  - [SerpAPI](https://serpapi.com)
-  - [PhantomBuster](https://phantombuster.com)
-
----
-
-### Local Setup (Without Docker)
+### Run locally
 
 ```bash
-git clone https://github.com/JustJay7/CampusCompass.git
-cd CampusCompass
+# Clone the repository
+git clone https://github.com/SuryeshPandey/Unibot.git
+cd Unibot
+
+# Install dependencies
 pip install -r requirements.txt
-python chatbot.py
+
+# Add your API keys to a .env file
+# PROXYCURL_API_KEY=your_key
+# SERPAPI_API_KEY=your_key
+# PHANTOMBUSTER_API_KEY=your_key
+
+# Run the app
+python app.py
 ```
-- Then visit: http://localhost:5000 in your browser.
 
----
+### Run with Docker
 
-## Docker Setup
 ```bash
-docker build -t unibot-chatbot .
-docker run -d -p 5000:5000 unibot-chatbot
+docker build -t unibot .
+docker run -p 5000:5000 unibot
 ```
 
----
-
-## Login Credentials
-### Only email IDs that end with @bennett.edu.in can access the chatbot. Therefore, please use one of the email IDs from the professor or student login deatils table. 
+The app will be available at `http://localhost:5000`.
 
 ---
 
-## Contributors
+## 🧗 Challenges & Learnings
 
-- Jay Malhotra – BCA, Bennett University
-- Suryesh Pandey - BSC, Bennett University
+- Training a neural model on a small, handcrafted dataset while balancing accuracy and generalization
+- Fixing coreference-resolution bugs (older packages like NeuralCoref broke on ARM-based Macs)
+- Implementing multi-turn conversation memory with careful session tracking
+- Isolating chat sessions so users never access each other's history
+- Managing API credit limits by rotating between providers during testing
+
+Each problem turned into a crash course in real-world AI system deployment — dependency management, working with external APIs, and containerizing environments to avoid OS-level issues.
+
+---
+
+## 🔮 Future Scope
+
+- Expand the training dataset for a more robust intent model
+- Add voice-based input
+- Integrate with the university's official timetable APIs
+- Add analytics to surface the most common student queries
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to fork the repo, open an issue, or submit a pull request.
+
+---
+
+## 📄 License
+
+Released under the MIT License. See `LICENSE` for details.
